@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import AppNavbar from '../components/layout/AppNavbar';
 import ProjectCard from '../components/project/ProjectCard';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,6 +11,7 @@ import './Profile.css';
 const Profile = () => {
     const { uid } = useParams();
     const { currentUser } = useAuth();
+    const navigate = useNavigate();
 
     const [profileUser, setProfileUser] = useState(null);
     const [userProjects, setUserProjects] = useState([]);
@@ -105,6 +106,18 @@ const Profile = () => {
                             <a href={profileUser.portfolio} target="_blank" rel="noreferrer" className="tag social-tag">Portfolio ↗</a>
                         )}
                     </div>
+                    
+                    {!isOwnProfile && currentUser && (
+                        <div className="mt-4" style={{ width: '100%' }}>
+                            <button 
+                                className="btn-sketch-action" 
+                                style={{ width: '100%' }}
+                                onClick={() => navigate('/messages', { state: { startChatWith: uid } })}
+                            >
+                                💬 Message Builder
+                            </button>
+                        </div>
+                    )}
                 </aside>
 
                 <main className="main-content">
