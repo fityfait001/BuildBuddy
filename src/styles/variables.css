@@ -1,33 +1,47 @@
 :root {
-  /* Color Palette */
-  --bg-color: #f4f3ee;
-  --card-bg: #ffffff;
-  --primary-ink: #2b3a33;
-  --accent-color: #e76f51;
-  --secondary-color: #a8dadc;
+  /* The Ethereal Nomad Color Palette */
+  --bg-color: #fcf9f5;
+  --surface: #fcf9f5;
+  --surface-container-low: #f6f3ef;
+  --surface-container-lowest: #ffffff;
+  --primary: #a63b19;
+  --primary-container: #ed6f49;
+  --on-primary: #ffffff;
+  --secondary-container: #c4ecd2;
+  --on-secondary-container: #486c57;
+  --outline-variant: #dfc0b7;
+  --on-surface: #1c1c1a;
+  --on-surface-variant: #57423c;
+  
+  /* Legacy mappings to ease migration */
+  --card-bg: var(--surface-container-lowest);
+  --primary-ink: var(--on-surface);
+  --accent-color: var(--primary);
+  --secondary-color: var(--secondary-container);
 
   /* Typography */
   --font-primary: 'Plus Jakarta Sans', sans-serif;
   --font-headings: 'Space Grotesk', sans-serif;
   --font-handwriting: 'Architects Daughter', cursive;
 
-  /* Neumorphic & Sketch UI Shadows */
-  --shadow-sm: 2px 2px 0px rgba(43, 58, 51, 0.2);
-  --shadow-md: 4px 4px 0px rgba(43, 58, 51, 0.8);
-  --shadow-lg: 8px 8px 0px rgba(43, 58, 51, 1);
-  --shadow-inset: inset 2px 2px 5px rgba(43, 58, 51, 0.1);
+  /* Ambient Depth (Ethereal Shadows) */
+  --shadow-sm: 0 4px 12px rgba(28, 28, 26, 0.02);
+  --shadow-md: 0 12px 24px rgba(28, 28, 26, 0.04);
+  --shadow-lg: 0 20px 40px rgba(28, 28, 26, 0.06);
+  --shadow-inset: inset 0 2px 8px rgba(28, 28, 26, 0.03);
 
-  /* Borders */
-  --border-thick: 3px solid var(--primary-ink);
-  --border-thin: 1.5px solid var(--primary-ink);
+  /* Borders (The Ghost Border Fallback - No thick lines) */
+  --border-thick: 1px solid rgba(223, 192, 183, 0.2);
+  --border-thin: 1px solid rgba(223, 192, 183, 0.1);
+  --border-transparent: 1px solid transparent;
   
   /* Radii */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
   --radius-pill: 9999px;
   
   /* Transitions */
-  --transition-fast: 0.15s ease-in-out;
-  --transition-normal: 0.25s ease-in-out;
+  --transition-fast: 0.2s ease-out;
+  --transition-normal: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }

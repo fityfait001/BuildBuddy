@@ -8,12 +8,12 @@ export default function YourStackPanel() {
 
     return (
         <div className="sketch-card your-stack-panel mt-4">
-            <h3 className="panel-title handwriting text-muted mb-4">// Your Stack</h3>
+            <h3 className="panel-title handwriting mb-4">Your Stack</h3>
 
             <div className="tags-container">
                 {skills.length > 0 ? (
                     skills.map((skill, index) => (
-                        <span key={index} className="tag tag-sketch">#{skill}</span>
+                        <span key={index} className="tag tag-ethereal">{skill}</span>
                     ))
                 ) : (
                     <p className="text-muted text-sm">Add skills to your profile to see them here.</p>

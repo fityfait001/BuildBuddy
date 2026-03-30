@@ -44,7 +44,7 @@ export default function QuickAccessPanel() {
 
     return (
         <div className="sketch-card quick-access-panel">
-            <h3 className="panel-title handwriting text-muted mb-4">// Quick Access</h3>
+            <h3 className="panel-title handwriting mb-4">Quick Access</h3>
 
             <div className="quick-access-list">
                 <NavLink to="/my-projects" className="quick-access-item">
