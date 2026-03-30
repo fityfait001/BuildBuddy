@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { applyToProject } from '../../services/applicationService';
 import './ApplyModal.css';
@@ -9,6 +10,16 @@ const ApplyModal = ({ project, onClose }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+
+    useEffect(() => {
+        // Lock background scroll when modal is open
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            // Restore background scroll when modal unmounts
+            document.body.style.overflow = "auto";
+        };
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -38,9 +49,9 @@ const ApplyModal = ({ project, onClose }) => {
         }
     };
 
-    return (
-        <div className="modal-overlay">
-            <div className="sketch-card modal-content apply-modal">
+    const modalContent = (
+        <div className="modal-overlay" onClick={onClose} style={{ pointerEvents: 'auto' }}>
+            <div className="modal-container" onClick={(e) => { e.stopPropagation(); }}>
                 <button className="modal-close" onClick={onClose}>&times;</button>
 
                 {success ? (
@@ -56,7 +67,7 @@ const ApplyModal = ({ project, onClose }) => {
 
                         {error && <div className="sketch-card error-card mb-4">{error}</div>}
 
-                        <form onSubmit={handleSubmit} className="auth-form">
+                        <form onSubmit={handleSubmit} className="auth-form" onClick={(e) => e.stopPropagation()}>
                             <div className="form-group">
                                 <label>Why do you want to join? (Optional cover letter)</label>
                                 <textarea
@@ -82,6 +93,8 @@ const ApplyModal = ({ project, onClose }) => {
             </div>
         </div>
     );
+
+    return createPortal(modalContent, document.body);
 };
 
 export default ApplyModal;

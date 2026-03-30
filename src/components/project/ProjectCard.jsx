@@ -1,42 +1,63 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Users, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users } from 'lucide-react';
+import './ProjectCard.css';
 
-const ProjectCard = ({ project }) => {
-    // Format the firestore timestamp loosely
-    const timeAgo = project.createdAt ? new Date(project.createdAt.toMillis()).toLocaleDateString() : 'Just now';
+export default function ProjectCard({ project }) {
+    const navigate = useNavigate();
+
+    // Status text formatting
+    const isRecruiting = project.status === 'active' || project.recruiting !== false;
+    const statusText = isRecruiting ? 'RECRUITING' : 'CLOSED';
+
+    // Calculate team numbers
+    const memberCount = project.members?.length || 1;
+    const maxMembers = project.teamSize || 4;
 
     return (
-        <div className="sketch-card project-card">
+        <div className="project-card-new">
+            {/* Top row */}
             <div className="project-card-header">
-                <h3 className="project-title">{project.title}</h3>
-                <span className="project-date"><Clock size={14} /> {timeAgo}</span>
-            </div>
-
-            <p className="project-owner">
-                Posted by <span className="handwriting">{project.ownerName}</span>
-            </p>
-
-            <p className="project-desc">{project.description}</p>
-
-            <div className="project-tags">
-                {project.tags && project.tags.map(tag => (
-                    <span key={tag} className="tag tag-sketch">#{tag}</span>
-                ))}
-            </div>
-
-            <div className="project-card-footer mt-4">
-                <div className="project-members">
-                    <Users size={16} />
-                    <span>{project.members?.length || 1} / {project.maxMembers || '?'} Members</span>
+                <span className={isRecruiting ? 'badge-recruiting' : 'badge-closed'}>
+                    {statusText}
+                </span>
+                <div className="project-card-members">
+                    <Users size={16} className="text-primary-ink" style={{ strokeWidth: 2.5 }} />
+                    <span>{memberCount}/{maxMembers}</span>
                 </div>
-
-                <Link to={`/projects/${project.id}`} className="btn btn-sm btn-secondary">
-                    View Details
-                </Link>
             </div>
+
+            {/* Title & Subtitle */}
+            <div className="project-card-body">
+                <h3 className="project-card-title">
+                    {project.title}
+                </h3>
+                <p className="project-card-subtitle">
+                    {project.category || 'project'} • by {project.ownerName || 'Unknown'}
+                </p>
+            </div>
+
+            {/* Tech Stack Tags */}
+            <div className="project-card-tags">
+                {project.techStack?.slice(0, 3).map(tech => (
+                    <span key={tech} className="tech-tag-sharp">
+                        {tech}
+                    </span>
+                ))}
+                {project.techStack?.length > 3 && (
+                    <span className="tech-tag-sharp">
+                        +{project.techStack.length - 3}
+                    </span>
+                )}
+            </div>
+
+            {/* Action */}
+            <button
+                onClick={() => navigate(`/projects/${project.id}`)}
+                className="btn-sketch-action mt-4"
+            >
+                OPEN BUILD
+            </button>
         </div>
     );
-};
-
-export default ProjectCard;
+}

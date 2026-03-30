@@ -1,0 +1,39 @@
+/* Explore.css */
+.explore-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.explore-grid {
+    display: grid;
+    /* Fixed sidebar widths, flexible center */
+    grid-template-columns: 260px 1fr 280px;
+    gap: 24px;
+    padding-bottom: 3rem;
+    align-items: start;
+}
+
+.explore-main-col {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto; /* Center within its grid area */
+}
+
+/* Mobile responsive behavior overrides */
+@media (max-width: 1024px) {
+    .explore-grid {
+        grid-template-columns: 1fr 2fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .explore-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .explore-main-col {
+        order: -1;
+    }
+}

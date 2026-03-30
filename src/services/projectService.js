@@ -1,5 +1,6 @@
-import { collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, getDocs, doc, getDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase.config';
+import { createNotification } from './notificationService';
 
 // Fetches the latest open projects for the feed
 export const getFeedProjects = async (projectsLimit = 20) => {
@@ -111,4 +112,73 @@ export const getUserProjects = async (uid) => {
     // Fallback sort client side
     projects.sort((a, b) => b.createdAt?.toMillis() - a.createdAt?.toMillis());
     return projects;
+};
+
+// Delete a project and handle cleanup/notifications
+export const deleteProject = async (projectId, currentUserId) => {
+    // 1 Fetch project document
+    const projectRef = doc(db, 'projects', projectId);
+    const docSnap = await getDoc(projectRef);
+
+    if (!docSnap.exists()) {
+        throw new Error("Project not found");
+    }
+
+    const projectData = docSnap.data();
+
+    // 2 Validate ownership
+    if (projectData.ownerId !== currentUserId) {
+        throw new Error("Only the project creator can delete this project.");
+    }
+
+    // 3 Store these values before deletion
+    const projectTitle = projectData.title;
+    const members = projectData.members || [];
+    const ownerId = projectData.ownerId;
+
+    // 4 Delete the project document
+    await deleteDoc(projectRef);
+
+    // 5 Clean up orphaned applications
+    const appsRef = collection(db, 'applications');
+    let appsToDelete = [];
+    
+    try {
+        const q = query(appsRef, where('projectId', '==', projectId));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((appDoc) => {
+            appsToDelete.push(appDoc.ref);
+        });
+    } catch (error) {
+        if (error.code === 'failed-precondition') {
+            console.warn("Firestore Index Missing for deleting applications. Fallback to client filtering.");
+            const querySnapshot = await getDocs(appsRef);
+            querySnapshot.forEach((appDoc) => {
+                if (appDoc.data().projectId === projectId) {
+                    appsToDelete.push(appDoc.ref);
+                }
+            });
+        } else {
+            throw error;
+        }
+    }
+
+    const deletePromises = appsToDelete.map(ref => deleteDoc(ref));
+    await Promise.all(deletePromises);
+
+    // 6 Notify members
+    const notificationPromises = members.map(memberId => {
+        if (memberId !== ownerId) {
+            return createNotification(
+                memberId,
+                `The project "${projectTitle}" was deleted by its creator.`,
+                "PROJECT_DELETED",
+                projectId,
+                projectTitle
+            );
+        }
+        return Promise.resolve();
+    });
+
+    await Promise.all(notificationPromises);
 };

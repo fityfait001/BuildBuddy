@@ -132,13 +132,14 @@
 
 .project-area {
     grid-column: 1 / -1;
-    /* spans full width of bento-grid */
     min-height: 350px;
     border-radius: 40px 15px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: stretch;
+    /* allows children to fill full width naturally */
+    padding: 2.5rem;
     background-image:
         linear-gradient(var(--bg-color) 1.5px, transparent 1.5px),
         linear-gradient(90deg, var(--bg-color) 1.5px, transparent 1.5px);
@@ -161,6 +162,7 @@
     cursor: pointer;
     transition: 0.2s;
     box-shadow: 2px 2px 0px var(--primary-ink);
+    z-index: 10;
 }
 
 .btn-edit:hover {
@@ -169,9 +171,8 @@
 }
 
 .project-label {
-    position: absolute;
-    top: 30px;
-    left: 30px;
+    display: block;
+    margin-bottom: 1rem;
 }
 
 .empty-projects-wrapper {
@@ -230,17 +231,127 @@
 }
 
 .projects-list {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    margin-top: 4rem;
-    /* push down below the top label */
-    width: 100%;
-    padding: 0 1rem;
+    display: none;
 }
 
-@media (min-width: 768px) and (max-width: 991px) {
-    .projects-list {
-        grid-template-columns: repeat(2, 1fr);
+/* Stats Row Container */
+.stats-row-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+    align-items: start;
+    /* prevents vertical stretching */
+}
+
+/* Stat Badges for Medals */
+.stat-badge {
+    background-color: var(--primary-ink);
+    color: white;
+    padding: 1.5rem 1rem;
+    border: 3px solid #111827;
+    box-shadow: 4px 4px 0 #111827;
+    text-align: center;
+    border-radius: 0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    height: max-content;
+}
+
+.stat-badge:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 #111827;
+}
+
+.stat-value {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    font-family: var(--font-heading, monospace);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-family: var(--font-heading, sans-serif);
+    letter-spacing: 0.5px;
+}
+
+/* Compact Anchor Links for Projects */
+.project-anchor-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.25rem;
+    background-color: white;
+    border: 2px solid #111827;
+    box-shadow: 2px 2px 0 #111827;
+    text-decoration: none;
+    color: #111827;
+    transition: transform 0.1s, box-shadow 0.1s, background-color 0.2s;
+}
+
+.project-anchor-link:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #111827;
+    background-color: #f8fafc;
+    color: #111827;
+}
+
+.project-anchor-link:active {
+    transform: translate(1px, 1px);
+    box-shadow: 0px 0px 0 #111827;
+}
+
+.project-anchor-title {
+    font-weight: 800;
+    font-size: 1.05rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 70%;
+}
+
+.project-category h4 {
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 0.4rem;
+    display: inline-block;
+}
+
+.projects-lists-container {
+    width: 100%;
+}
+
+/* New 2-Column Grid Layout for Projects */
+.project-columns-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    width: 100%;
+    /* Let grid take up remaining height to fill the card */
+    min-height: 100%;
+    align-items: stretch;
+}
+
+.project-category {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    /* Stretch category container completely */
+}
+
+/* Ensure the wrapper holding links stretches */
+.project-category-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-grow: 1;
+    /* Pushes content down or stretches */
+}
+
+@media (max-width: 991px) {
+    .project-columns-grid {
+        grid-template-columns: 1fr;
     }
 }

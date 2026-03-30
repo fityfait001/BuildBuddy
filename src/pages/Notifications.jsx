@@ -7,15 +7,18 @@ import {
     acceptApplication,
     rejectApplication
 } from '../services/applicationService';
+import { getUserNotifications } from '../services/notificationService';
 import { Link } from 'react-router-dom';
+import { AlertTriangle, Clock } from 'lucide-react';
 import './Notifications.css';
 
 export default function Notifications() {
     const { currentUser } = useAuth();
-    const [activeTab, setActiveTab] = useState('incoming'); // 'incoming' or 'outgoing'
+    const [activeTab, setActiveTab] = useState('incoming'); // 'incoming', 'outgoing', or 'alerts'
 
     const [incomingApps, setIncomingApps] = useState([]);
     const [outgoingApps, setOutgoingApps] = useState([]);
+    const [systemAlerts, setSystemAlerts] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -26,14 +29,16 @@ export default function Notifications() {
     const loadData = async () => {
         setLoading(true);
         try {
-            const [incoming, outgoing] = await Promise.all([
+            const [incoming, outgoing, alerts] = await Promise.all([
                 getManageableApplications(currentUser.uid),
-                getUserApplications(currentUser.uid)
+                getUserApplications(currentUser.uid),
+                getUserNotifications(currentUser.uid)
             ]);
             setIncomingApps(incoming);
             setOutgoingApps(outgoing);
+            setSystemAlerts(alerts);
         } catch (error) {
-            console.error("Failed to load applications:", error);
+            console.error("Failed to load notifications:", error);
         } finally {
             setLoading(false);
         }
@@ -147,6 +152,39 @@ export default function Notifications() {
         ));
     };
 
+    const renderAlerts = () => {
+        if (systemAlerts.length === 0) {
+            return (
+                <div className="sketch-card text-center py-5 mt-4">
+                    <h3 className="handwriting text-accent">No alerts.</h3>
+                    <p>You have no system alerts right now.</p>
+                </div>
+            );
+        }
+
+        return systemAlerts.map(alert => (
+            <div key={alert.id} className={`sketch-card application-card mb-4 flex justify-between items-start ${!alert.read ? 'border-primary-ink border-[2px]' : ''}`}>
+                <div>
+                    <div className="flex items-center gap-2 mb-2">
+                        <AlertTriangle size={18} className="text-red-500" />
+                        <h3 className="font-heading font-bold text-lg text-primary-ink m-0 leading-none">
+                            Project Deleted
+                        </h3>
+                    </div>
+                    <p className="text-gray-700 font-medium mb-3 relative top-[5px]">
+                        {alert.message}
+                    </p>
+                    <p className="text-xs text-muted flex items-center gap-1 font-bold tracking-wide">
+                        <Clock size={12} /> {alert.createdAt?.toDate().toLocaleString() || 'Recently'}
+                    </p>
+                </div>
+                {!alert.read && (
+                    <div className="bg-primary-ink w-3 h-3 rounded-full mt-2"></div>
+                )}
+            </div>
+        ));
+    };
+
     return (
         <div className="page-wrapper min-h-screen bg-bg-color">
             <AppNavbar />
@@ -171,6 +209,15 @@ export default function Notifications() {
                     >
                         My Applications
                     </button>
+                    <button
+                        className={`tab-btn ${activeTab === 'alerts' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('alerts')}
+                    >
+                        System Alerts
+                        {systemAlerts.filter(a => !a.read).length > 0 && (
+                            <span className="badge-count ml-2">{systemAlerts.filter(a => !a.read).length}</span>
+                        )}
+                    </button>
                 </div>
 
                 {loading ? (
@@ -179,7 +226,7 @@ export default function Notifications() {
                     </div>
                 ) : (
                     <div className="tab-content">
-                        {activeTab === 'incoming' ? renderIncoming() : renderOutgoing()}
+                        {activeTab === 'incoming' ? renderIncoming() : activeTab === 'outgoing' ? renderOutgoing() : renderAlerts()}
                     </div>
                 )}
             </main>

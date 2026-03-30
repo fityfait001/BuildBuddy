@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Bell, Search, Menu, X, Settings, LogOut, User, Home, Compass, Folder, MessageSquare } from 'lucide-react';
 import './AppNavbar.css';
 
-const AppNavbar = () => {
+const AppNavbar = ({ searchQuery, onSearchChange }) => {
     const { currentUser, logout, userProfile } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
@@ -79,7 +79,13 @@ const AppNavbar = () => {
 
                     <div className="search-bar-container hide-mobile">
                         <Search size={18} className="search-icon" />
-                        <input type="text" placeholder="Search projects or skills..." className="search-input sketch-input" />
+                        <input 
+                            type="text" 
+                            placeholder="Search projects or skills..." 
+                            className="search-input sketch-input" 
+                            value={searchQuery !== undefined ? searchQuery : ""}
+                            onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+                        />
                     </div>
 
                     <Link to="/notifications" className="icon-btn notification-bell hide-mobile">
@@ -92,8 +98,13 @@ const AppNavbar = () => {
                             className="avatar-btn"
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                             aria-label="User menu"
+                            style={{ padding: 0, overflow: 'hidden' }}
                         >
-                            {userProfile?.displayName?.charAt(0).toUpperCase() || currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}
+                            <img 
+                                src={`https://api.dicebear.com/7.x/micah/svg?seed=${userProfile?.displayName || currentUser?.displayName || 'User'}&backgroundColor=transparent`} 
+                                alt="User Avatar" 
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
                         </button>
 
                         {isDropdownOpen && (
@@ -127,7 +138,13 @@ const AppNavbar = () => {
                 <div className="mobile-nav-menu sketch-card">
                     <div className="mobile-search mb-3">
                         <Search size={18} className="search-icon" />
-                        <input type="text" placeholder="Search..." className="search-input sketch-input w-100" />
+                        <input 
+                            type="text" 
+                            placeholder="Search..." 
+                            className="search-input sketch-input w-100" 
+                            value={searchQuery !== undefined ? searchQuery : ""}
+                            onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+                        />
                     </div>
                     <NavLinks />
                 </div>

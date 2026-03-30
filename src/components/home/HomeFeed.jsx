@@ -3,7 +3,7 @@ import IdeaInputBar from './IdeaInputBar';
 import ProjectRecruitmentCard from './ProjectRecruitmentCard';
 import { getFeedProjects } from '../../services/projectService';
 
-export default function HomeFeed() {
+export default function HomeFeed({ searchQuery = "" }) {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -41,7 +41,14 @@ export default function HomeFeed() {
                     </div>
                 ) : (
                     <div className="project-feed-list">
-                        {projects.map((project) => (
+                        {projects.filter((project) => {
+                            const query = searchQuery.toLowerCase();
+                            return (
+                                project.title?.toLowerCase().includes(query) ||
+                                project.description?.toLowerCase().includes(query) ||
+                                project.tags?.some(tag => tag.toLowerCase().includes(query))
+                            );
+                        }).map((project) => (
                             <ProjectRecruitmentCard key={project.id} project={project} />
                         ))}
                     </div>
